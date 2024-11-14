@@ -38,9 +38,6 @@ jobs:
       # Build and run tests
       - name: Build and Test
         run: docker compose up --build --abort-on-container-exit app
-        env:
-          DJANGO_SETTINGS_MODULE: app.settings
-          #DATABASE_URL: postgres://user:password@db:5432/test_db
 
       # Run Linting
       - name: Lint with flake8
