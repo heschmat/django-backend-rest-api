@@ -26,13 +26,14 @@ RUN python -m venv /py && \
 # Set PATH to include the virtual environment
 ENV PATH="/py/bin:$PATH"
 
-# Create and use a non-root user
-RUN adduser --disabled-password --no-create-home user1
-USER user1
-
 # Copy application files
 COPY ./app /app
 WORKDIR /app
+
+# Create and use a non-root user
+RUN adduser --disabled-password --no-create-home user1
+RUN chown -R user1:user1 /app
+USER user1
 
 # Expose the application port
 EXPOSE 8000
