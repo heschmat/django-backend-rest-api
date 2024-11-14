@@ -35,10 +35,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      # Build and run tests
+      # Build and Test
       - name: Build and Test
+        #run: docker compose run --rm app "python manage.py test"
         run: docker compose up --build --abort-on-container-exit app
+        env:
+          DJANGO_SETTINGS_MODULE: app.settings
+          DATABASE_URL: sqlite://:memory:
 
       # Run Linting
       - name: Lint with flake8
-        run: docker compose run --rm app flake8
+        run: docker compose run --rm app "flake8"
