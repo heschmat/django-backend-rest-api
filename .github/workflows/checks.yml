@@ -41,7 +41,7 @@ jobs:
         run: docker compose up --build --abort-on-container-exit app
         env:
           DJANGO_SETTINGS_MODULE: app.settings
-          DATABASE_URL: sqlite://:memory:
+          DATABASE_URL: 'sqlite://:memory:'
 
       # Run Linting
       - name: Lint with flake8
