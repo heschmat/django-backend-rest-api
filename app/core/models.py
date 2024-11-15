@@ -14,8 +14,8 @@ class UserManager(BaseUserManager):
     """User Manager."""
 
     def create_user(self, email, password=None, **kwargs):
-        """Create"""
-        user = self.model(email=email, **kwargs)
+        """Create, save & return a new User."""
+        user = self.model(email=self.normalize_email(email), **kwargs)
         user.set_password(password)
         # `using=self._db` is just in case you want to add multiple dbs.
         # which is rare; but keep it just in case.

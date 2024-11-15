@@ -19,4 +19,12 @@ class ModelTests(TestCase):
 
         self.assertEqual(user.email, email)
         # .check_password() is provided by `BaseUserManager`
-        self.assertTrue(user.checck_password(password))
+        self.assertTrue(user.check_password(password))
+
+    def test_new_user_email_normalized(self):
+        """Test email is normalized (when created)."""
+        sample_emails = (
+            ('user1@EXAMPLE.com', 'user1@example.com'),
+            ('User1@Example.COM', 'user1@example.com'),
+            ('user1@Example.Com', 'user1@example.com')
+        )
