@@ -10,29 +10,32 @@ RUN apk update && apk add --no-cache \
     libffi-dev \
     linux-headers
 
-# Create virtual environment and install dependencies
-COPY ./requirements.txt /tmp/requirements.txt
-COPY ./requirements.dev.txt /tmp/requirements.dev.txt
+# copy the requirements (including dev requirements) to /tmp
+COPY ./requirements.txt ./requirements.dev.txt /tmp/
 
-ARG DEV=false
-RUN python -m venv /py && \
-    /py/bin/pip install --upgrade pip && \
-    /py/bin/pip install --no-cache-dir -r /tmp/requirements.txt && \
-    if [ $DEV = "true" ]; \
-        then /py/bin/pip install -r /tmp/requirements.dev.txt ; \
-    fi && \
-    rm -rf /tmp
-
-# Set PATH to include the virtual environment
-ENV PATH="/py/bin:$PATH"
 
 # Copy application files
+# the **contents** of `app` in local into the /app directory.
 COPY ./app /app
 WORKDIR /app
 
-# Create and use a non-root user
-RUN adduser --disabled-password --no-create-home user1
-RUN chown -R user1:user1 /app
+ARG DEV=false
+
+# Set PATH to include the virtual environment
+# /py/bin is being prepended to the PATH variable
+# now we can simply use `pip` rather than `/py/bin/pip`
+ENV PATH="/py/bin:$PATH"
+
+# Create virtual environment and install dependencies
+RUN python -m venv /py && pip install --upgrade pip && \
+    pip install --no-cache-dir -r /tmp/requirements.txt && \
+    if [ $DEV = "true" ]; \
+        then pip install -r /tmp/requirements.dev.txt ; \
+    fi && \
+    rm -rf /tmp && \
+    adduser --disabled-password --no-create-home user1 && \
+    chown -R user1:user1 /app
+
 USER user1
 
 # Expose the application port
