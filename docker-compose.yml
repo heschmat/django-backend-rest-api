@@ -35,4 +35,5 @@ services:
       - POSTGRES_PASSWORD=changeme
 
 volumes:
+  # docker volume ls
   dev-db-data:
