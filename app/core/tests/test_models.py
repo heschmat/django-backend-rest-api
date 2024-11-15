@@ -23,8 +23,29 @@ class ModelTests(TestCase):
 
     def test_new_user_email_normalized(self):
         """Test email is normalized (when created)."""
+        # Basically, username as is; the rest all lowercase.
         sample_emails = (
             ('user1@EXAMPLE.com', 'user1@example.com'),
-            ('User1@Example.COM', 'user1@example.com'),
-            ('user1@Example.Com', 'user1@example.com')
+            ('User2@Example.COM', 'User2@example.com'),
+            ('USER3@EXAMPLE.COM', 'USER3@example.com'),
+            ('user4@Example.Com', 'user4@example.com')
         )
+
+        for email, expected_format in sample_emails:
+            user = get_user_model().objects.create_user(email, 'Whatever123')
+            self.assertEqual(user.email, expected_format)
+
+    def test_new_user_withouth_email_fails(self):
+        """Test creating a user w/o email raises a ValueError."""
+        with self.assertRaises(ValueError):
+            get_user_model().objects.create_user('', 'Whatever123')
+
+    def test_create_superuser(self):
+        """Test."""
+        user = get_user_model().objects.create_superuser(
+            'admin@example.com',
+            'Whatever123'
+        )
+
+        self.assertTrue(user.is_superuser)
+        self.assertTrue(user.is_staff)
