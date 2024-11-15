@@ -33,7 +33,7 @@ RUN python -m venv /py && pip install --upgrade pip && \
     # these packages are needed for `psycopg2` installation only.
     # we package them into a virtual temp package `.tmp-build-deps` and when done, we remove it.
     apk add --update --no-cache --virtual .tmp-build-deps build-base postgresql-dev musl-dev && \
-    # requirement.txt
+    # requirement dpendencies -------------------------
     pip install --no-cache-dir -r /tmp/requirements.txt && \
     if [ $DEV = "true" ]; \
         then pip install -r /tmp/requirements.dev.txt ; \
