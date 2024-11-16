@@ -29,7 +29,7 @@ class UserAdmin(BaseUserAdmin):
                 'name',
                 'is_active', 'is_staff', 'is_superuser'
             )
-        }),  #don't forget the `,` => TypeError: cannot unpack non-iterable NoneType object
+        }),  # don't forget the `,` => TypeError: cannot unpack non-iterable NoneType object
     )
 
 
