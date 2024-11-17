@@ -23,6 +23,10 @@ lint:
 createsuperuser:
 	docker compose run --rm $(APP_CONTAINER) sh -c "python manage.py createsuperuser"
 
+# Make migrations
+makemigrations:
+	docker compose run --rm $(APP_CONTAINER) sh -c "python manage.py makemigrations"
+
 # Create a new Django app with the given name
 # Usage: make startapp name=<app_name>
 startapp:
