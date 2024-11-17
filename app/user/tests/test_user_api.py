@@ -13,6 +13,7 @@ from rest_framework import status
 # add_user: the `name` in the `path` added to urlpatterns in `user.urls`
 CREATE_USER_URL = reverse('user:add_user')
 TOKEN_URL = reverse('user:token')
+PROFILE_URL = reverse('user:me')
 
 
 def create_user(**kwargs):
@@ -98,3 +99,43 @@ class UserAPITestsPublic(TestCase):
 
         self.assertNotIn('token', res.data)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_retrieve_user_unauthorized(self):
+        """Test authentication is mandatory."""
+        res = self.client.get(PROFILE_URL)
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class UserAPITestsAuthenticated(TestCase):
+    """Test API requests that require authentication."""
+    def setUp(self):
+        # Create a test user that's authenticated:
+        payload = {'email': 'user1@example.com', 'password': 'Whatever123', 'name': 'JJ'}
+        self.user = create_user(**payload)
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+    def test_retrieve_profile_ok(self):
+        """Test retrieving profile of the logged in user."""
+        res = self.client.get(PROFILE_URL)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, {
+            'email': self.user.email,
+            'name': self.user.name,
+        })
+
+    def test_post_profile_page_not_allowed(self):
+        """Test POST method not allowed for `me` endpoint."""
+        res = self.client.post(PROFILE_URL, {})
+
+        self.assertEqual(res.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_update_user_profile(self):
+        """Test updating profile of the authenticated user."""
+        payload2update = {'name': 'I am not JJ', 'password': 'Who is JJ??'}
+        res = self.client.patch(PROFILE_URL, payload2update)
+
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.name, payload2update['name'])
+        self.assertTrue(self.user.check_password(payload2update['password']))
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
